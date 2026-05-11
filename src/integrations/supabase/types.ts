@@ -14,7 +14,456 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      appointments: {
+        Row: {
+          appointment_date: string
+          appointment_time: string
+          created_at: string | null
+          doctor_id: string
+          hospital_id: string | null
+          id: string
+          notes: string | null
+          patient_name: string
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          appointment_date: string
+          appointment_time: string
+          created_at?: string | null
+          doctor_id: string
+          hospital_id?: string | null
+          id?: string
+          notes?: string | null
+          patient_name: string
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          appointment_date?: string
+          appointment_time?: string
+          created_at?: string | null
+          doctor_id?: string
+          hospital_id?: string | null
+          id?: string
+          notes?: string | null
+          patient_name?: string
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_hospital_id_fkey"
+            columns: ["hospital_id"]
+            isOneToOne: false
+            referencedRelation: "hospitals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      beds: {
+        Row: {
+          emergency_available: number | null
+          general_available: number | null
+          hospital_id: string
+          icu_available: number | null
+          oxygen_available: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          emergency_available?: number | null
+          general_available?: number | null
+          hospital_id: string
+          icu_available?: number | null
+          oxygen_available?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          emergency_available?: number | null
+          general_available?: number | null
+          hospital_id?: string
+          icu_available?: number | null
+          oxygen_available?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "beds_hospital_id_fkey"
+            columns: ["hospital_id"]
+            isOneToOne: true
+            referencedRelation: "hospitals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      blood_banks: {
+        Row: {
+          address: string | null
+          available_groups: string[] | null
+          city: string
+          id: string
+          name: string
+          phone: string | null
+        }
+        Insert: {
+          address?: string | null
+          available_groups?: string[] | null
+          city: string
+          id?: string
+          name: string
+          phone?: string | null
+        }
+        Update: {
+          address?: string | null
+          available_groups?: string[] | null
+          city?: string
+          id?: string
+          name?: string
+          phone?: string | null
+        }
+        Relationships: []
+      }
+      blood_donors: {
+        Row: {
+          available: boolean | null
+          blood_group: string
+          city: string
+          created_at: string | null
+          id: string
+          name: string
+          phone: string
+          user_id: string
+        }
+        Insert: {
+          available?: boolean | null
+          blood_group: string
+          city: string
+          created_at?: string | null
+          id?: string
+          name: string
+          phone: string
+          user_id: string
+        }
+        Update: {
+          available?: boolean | null
+          blood_group?: string
+          city?: string
+          created_at?: string | null
+          id?: string
+          name?: string
+          phone?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      doctors: {
+        Row: {
+          available_days: string[] | null
+          avatar_url: string | null
+          avg_wait_min: number | null
+          consultation_fee: number | null
+          experience_years: number | null
+          hospital_id: string | null
+          id: string
+          name: string
+          rating: number | null
+          specialization: string
+          timing: string | null
+        }
+        Insert: {
+          available_days?: string[] | null
+          avatar_url?: string | null
+          avg_wait_min?: number | null
+          consultation_fee?: number | null
+          experience_years?: number | null
+          hospital_id?: string | null
+          id?: string
+          name: string
+          rating?: number | null
+          specialization: string
+          timing?: string | null
+        }
+        Update: {
+          available_days?: string[] | null
+          avatar_url?: string | null
+          avg_wait_min?: number | null
+          consultation_fee?: number | null
+          experience_years?: number | null
+          hospital_id?: string | null
+          id?: string
+          name?: string
+          rating?: number | null
+          specialization?: string
+          timing?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctors_hospital_id_fkey"
+            columns: ["hospital_id"]
+            isOneToOne: false
+            referencedRelation: "hospitals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      emergency_contacts: {
+        Row: {
+          category: string
+          id: string
+          label: string
+          number: string
+        }
+        Insert: {
+          category: string
+          id?: string
+          label: string
+          number: string
+        }
+        Update: {
+          category?: string
+          id?: string
+          label?: string
+          number?: string
+        }
+        Relationships: []
+      }
+      health_records: {
+        Row: {
+          created_at: string | null
+          file_url: string | null
+          id: string
+          notes: string | null
+          record_type: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          file_url?: string | null
+          id?: string
+          notes?: string | null
+          record_type?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          file_url?: string | null
+          id?: string
+          notes?: string | null
+          record_type?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      hospitals: {
+        Row: {
+          address: string | null
+          ayushman: boolean | null
+          city: string
+          cost_tier: string | null
+          created_at: string | null
+          emergency_24x7: boolean | null
+          has_ambulance: boolean | null
+          has_icu: boolean | null
+          has_mri: boolean | null
+          id: string
+          image_url: string | null
+          is_government: boolean | null
+          lat: number | null
+          lng: number | null
+          name: string
+          phone: string | null
+          rating: number | null
+          specialties: string[] | null
+        }
+        Insert: {
+          address?: string | null
+          ayushman?: boolean | null
+          city: string
+          cost_tier?: string | null
+          created_at?: string | null
+          emergency_24x7?: boolean | null
+          has_ambulance?: boolean | null
+          has_icu?: boolean | null
+          has_mri?: boolean | null
+          id?: string
+          image_url?: string | null
+          is_government?: boolean | null
+          lat?: number | null
+          lng?: number | null
+          name: string
+          phone?: string | null
+          rating?: number | null
+          specialties?: string[] | null
+        }
+        Update: {
+          address?: string | null
+          ayushman?: boolean | null
+          city?: string
+          cost_tier?: string | null
+          created_at?: string | null
+          emergency_24x7?: boolean | null
+          has_ambulance?: boolean | null
+          has_icu?: boolean | null
+          has_mri?: boolean | null
+          id?: string
+          image_url?: string | null
+          is_government?: boolean | null
+          lat?: number | null
+          lng?: number | null
+          name?: string
+          phone?: string | null
+          rating?: number | null
+          specialties?: string[] | null
+        }
+        Relationships: []
+      }
+      pharmacies: {
+        Row: {
+          address: string | null
+          city: string
+          home_delivery: boolean | null
+          id: string
+          medicines: string[] | null
+          name: string
+          open_24x7: boolean | null
+          phone: string | null
+        }
+        Insert: {
+          address?: string | null
+          city: string
+          home_delivery?: boolean | null
+          id?: string
+          medicines?: string[] | null
+          name: string
+          open_24x7?: boolean | null
+          phone?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string
+          home_delivery?: boolean | null
+          id?: string
+          medicines?: string[] | null
+          name?: string
+          open_24x7?: boolean | null
+          phone?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          blood_group: string | null
+          created_at: string
+          emergency_contact: string | null
+          full_name: string | null
+          id: string
+          language: string | null
+          phone: string | null
+        }
+        Insert: {
+          blood_group?: string | null
+          created_at?: string
+          emergency_contact?: string | null
+          full_name?: string | null
+          id: string
+          language?: string | null
+          phone?: string | null
+        }
+        Update: {
+          blood_group?: string | null
+          created_at?: string
+          emergency_contact?: string | null
+          full_name?: string | null
+          id?: string
+          language?: string | null
+          phone?: string | null
+        }
+        Relationships: []
+      }
+      reviews: {
+        Row: {
+          cleanliness: number | null
+          comment: string | null
+          created_at: string | null
+          doctor_behavior: number | null
+          hospital_id: string
+          id: string
+          rating: number
+          treatment_quality: number | null
+          user_id: string
+          waiting_time: number | null
+        }
+        Insert: {
+          cleanliness?: number | null
+          comment?: string | null
+          created_at?: string | null
+          doctor_behavior?: number | null
+          hospital_id: string
+          id?: string
+          rating: number
+          treatment_quality?: number | null
+          user_id: string
+          waiting_time?: number | null
+        }
+        Update: {
+          cleanliness?: number | null
+          comment?: string | null
+          created_at?: string | null
+          doctor_behavior?: number | null
+          hospital_id?: string
+          id?: string
+          rating?: number
+          treatment_quality?: number | null
+          user_id?: string
+          waiting_time?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_hospital_id_fkey"
+            columns: ["hospital_id"]
+            isOneToOne: false
+            referencedRelation: "hospitals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      schemes: {
+        Row: {
+          benefits: string | null
+          description: string | null
+          eligibility: string | null
+          id: string
+          link: string | null
+          name: string
+        }
+        Insert: {
+          benefits?: string | null
+          description?: string | null
+          eligibility?: string | null
+          id?: string
+          link?: string | null
+          name: string
+        }
+        Update: {
+          benefits?: string | null
+          description?: string | null
+          eligibility?: string | null
+          id?: string
+          link?: string | null
+          name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
