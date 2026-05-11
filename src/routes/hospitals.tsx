@@ -61,7 +61,7 @@ function HospitalsPage() {
   }, [hospitals, search]);
 
   const update = (patch: Partial<typeof search>) =>
-    nav({ search: (prev) => ({ ...prev, ...patch }) });
+    nav({ search: (prev: typeof search) => ({ ...prev, ...patch }) });
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10">

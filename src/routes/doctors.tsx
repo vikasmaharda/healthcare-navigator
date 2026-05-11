@@ -39,9 +39,9 @@ function DoctorsPage() {
       <p className="text-muted-foreground">Filter by specialization. View timings, fees, ratings, and waiting time.</p>
 
       <div className="mt-5 flex flex-wrap gap-2">
-        <button onClick={() => nav({ search: (p) => ({ ...p, specialty: "" }) })} className={`px-3 py-1.5 rounded-full text-xs border transition ${!specialty ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>All</button>
+        <button onClick={() => nav({ search: (p: any) => ({ ...p, specialty: "" }) })} className={`px-3 py-1.5 rounded-full text-xs border transition ${!specialty ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>All</button>
         {SPECS.map(s => (
-          <button key={s} onClick={() => nav({ search: (p) => ({ ...p, specialty: s }) })}
+          <button key={s} onClick={() => nav({ search: (p: any) => ({ ...p, specialty: s }) })}
             className={`px-3 py-1.5 rounded-full text-xs border transition ${specialty===s ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground hover:text-foreground"}`}>
             {s}
           </button>
