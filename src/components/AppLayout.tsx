@@ -82,6 +82,11 @@ export function AppLayout() {
               <button onClick={toggleTheme} className="p-2 rounded-md hover:bg-muted text-muted-foreground" aria-label="Theme">
                 {dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
               </button>
+              {isAdmin(user?.email) && (
+                <Link to="/admin" className="hidden md:inline-flex items-center gap-1 px-2 py-1.5 rounded-md text-xs font-semibold bg-primary/15 text-primary hover:bg-primary/25">
+                  <Shield className="size-3.5" /> Admin
+                </Link>
+              )}
               {user ? (
                 <Button variant="outline" size="sm" onClick={signOut}><LogOut className="size-4 mr-1" />{t("logout")}</Button>
               ) : (
@@ -104,6 +109,14 @@ export function AppLayout() {
                     </Link>
                   );
                 })}
+                <Link to="/submit-hospital" className="col-span-2 mt-1 flex items-center gap-2 px-3 py-2 rounded-md bg-muted hover:bg-card text-sm">
+                  <Plus className="size-4 text-primary" /> Add a hospital
+                </Link>
+                {isAdmin(user?.email) && (
+                  <Link to="/admin" className="col-span-2 flex items-center gap-2 px-3 py-2 rounded-md bg-primary/15 text-primary text-sm font-semibold">
+                    <Shield className="size-4" /> Admin
+                  </Link>
+                )}
                 <Link to="/emergency" className="col-span-2 mt-1 flex items-center gap-2 px-3 py-2 rounded-md gradient-emergency text-emergency-foreground font-semibold">
                   <Siren className="size-4" /> Emergency SOS
                 </Link>
