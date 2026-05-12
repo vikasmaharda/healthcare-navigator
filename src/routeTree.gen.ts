@@ -9,19 +9,28 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SubmitHospitalRouteImport } from './routes/submit-hospital'
 import { Route as SchemesRouteImport } from './routes/schemes'
 import { Route as RecordsRouteImport } from './routes/records'
 import { Route as PharmacyRouteImport } from './routes/pharmacy'
+import { Route as NearbyRouteImport } from './routes/nearby'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as HospitalsRouteImport } from './routes/hospitals'
+import { Route as HelpRouteImport } from './routes/help'
 import { Route as EmergencyRouteImport } from './routes/emergency'
 import { Route as DoctorsRouteImport } from './routes/doctors'
 import { Route as CompareRouteImport } from './routes/compare'
 import { Route as BloodBankRouteImport } from './routes/blood-bank'
 import { Route as AppointmentsRouteImport } from './routes/appointments'
 import { Route as AiAssistantRouteImport } from './routes/ai-assistant'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 
+const SubmitHospitalRoute = SubmitHospitalRouteImport.update({
+  id: '/submit-hospital',
+  path: '/submit-hospital',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SchemesRoute = SchemesRouteImport.update({
   id: '/schemes',
   path: '/schemes',
@@ -37,6 +46,11 @@ const PharmacyRoute = PharmacyRouteImport.update({
   path: '/pharmacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NearbyRoute = NearbyRouteImport.update({
+  id: '/nearby',
+  path: '/nearby',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -45,6 +59,11 @@ const LoginRoute = LoginRouteImport.update({
 const HospitalsRoute = HospitalsRouteImport.update({
   id: '/hospitals',
   path: '/hospitals',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EmergencyRoute = EmergencyRouteImport.update({
@@ -77,6 +96,11 @@ const AiAssistantRoute = AiAssistantRouteImport.update({
   path: '/ai-assistant',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -85,109 +109,144 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/ai-assistant': typeof AiAssistantRoute
   '/appointments': typeof AppointmentsRoute
   '/blood-bank': typeof BloodBankRoute
   '/compare': typeof CompareRoute
   '/doctors': typeof DoctorsRoute
   '/emergency': typeof EmergencyRoute
+  '/help': typeof HelpRoute
   '/hospitals': typeof HospitalsRoute
   '/login': typeof LoginRoute
+  '/nearby': typeof NearbyRoute
   '/pharmacy': typeof PharmacyRoute
   '/records': typeof RecordsRoute
   '/schemes': typeof SchemesRoute
+  '/submit-hospital': typeof SubmitHospitalRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/ai-assistant': typeof AiAssistantRoute
   '/appointments': typeof AppointmentsRoute
   '/blood-bank': typeof BloodBankRoute
   '/compare': typeof CompareRoute
   '/doctors': typeof DoctorsRoute
   '/emergency': typeof EmergencyRoute
+  '/help': typeof HelpRoute
   '/hospitals': typeof HospitalsRoute
   '/login': typeof LoginRoute
+  '/nearby': typeof NearbyRoute
   '/pharmacy': typeof PharmacyRoute
   '/records': typeof RecordsRoute
   '/schemes': typeof SchemesRoute
+  '/submit-hospital': typeof SubmitHospitalRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/ai-assistant': typeof AiAssistantRoute
   '/appointments': typeof AppointmentsRoute
   '/blood-bank': typeof BloodBankRoute
   '/compare': typeof CompareRoute
   '/doctors': typeof DoctorsRoute
   '/emergency': typeof EmergencyRoute
+  '/help': typeof HelpRoute
   '/hospitals': typeof HospitalsRoute
   '/login': typeof LoginRoute
+  '/nearby': typeof NearbyRoute
   '/pharmacy': typeof PharmacyRoute
   '/records': typeof RecordsRoute
   '/schemes': typeof SchemesRoute
+  '/submit-hospital': typeof SubmitHospitalRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/ai-assistant'
     | '/appointments'
     | '/blood-bank'
     | '/compare'
     | '/doctors'
     | '/emergency'
+    | '/help'
     | '/hospitals'
     | '/login'
+    | '/nearby'
     | '/pharmacy'
     | '/records'
     | '/schemes'
+    | '/submit-hospital'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/ai-assistant'
     | '/appointments'
     | '/blood-bank'
     | '/compare'
     | '/doctors'
     | '/emergency'
+    | '/help'
     | '/hospitals'
     | '/login'
+    | '/nearby'
     | '/pharmacy'
     | '/records'
     | '/schemes'
+    | '/submit-hospital'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/ai-assistant'
     | '/appointments'
     | '/blood-bank'
     | '/compare'
     | '/doctors'
     | '/emergency'
+    | '/help'
     | '/hospitals'
     | '/login'
+    | '/nearby'
     | '/pharmacy'
     | '/records'
     | '/schemes'
+    | '/submit-hospital'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
   AiAssistantRoute: typeof AiAssistantRoute
   AppointmentsRoute: typeof AppointmentsRoute
   BloodBankRoute: typeof BloodBankRoute
   CompareRoute: typeof CompareRoute
   DoctorsRoute: typeof DoctorsRoute
   EmergencyRoute: typeof EmergencyRoute
+  HelpRoute: typeof HelpRoute
   HospitalsRoute: typeof HospitalsRoute
   LoginRoute: typeof LoginRoute
+  NearbyRoute: typeof NearbyRoute
   PharmacyRoute: typeof PharmacyRoute
   RecordsRoute: typeof RecordsRoute
   SchemesRoute: typeof SchemesRoute
+  SubmitHospitalRoute: typeof SubmitHospitalRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/submit-hospital': {
+      id: '/submit-hospital'
+      path: '/submit-hospital'
+      fullPath: '/submit-hospital'
+      preLoaderRoute: typeof SubmitHospitalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/schemes': {
       id: '/schemes'
       path: '/schemes'
@@ -209,6 +268,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PharmacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/nearby': {
+      id: '/nearby'
+      path: '/nearby'
+      fullPath: '/nearby'
+      preLoaderRoute: typeof NearbyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -221,6 +287,13 @@ declare module '@tanstack/react-router' {
       path: '/hospitals'
       fullPath: '/hospitals'
       preLoaderRoute: typeof HospitalsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/emergency': {
@@ -265,6 +338,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AiAssistantRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -277,28 +357,22 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
   AiAssistantRoute: AiAssistantRoute,
   AppointmentsRoute: AppointmentsRoute,
   BloodBankRoute: BloodBankRoute,
   CompareRoute: CompareRoute,
   DoctorsRoute: DoctorsRoute,
   EmergencyRoute: EmergencyRoute,
+  HelpRoute: HelpRoute,
   HospitalsRoute: HospitalsRoute,
   LoginRoute: LoginRoute,
+  NearbyRoute: NearbyRoute,
   PharmacyRoute: PharmacyRoute,
   RecordsRoute: RecordsRoute,
   SchemesRoute: SchemesRoute,
+  SubmitHospitalRoute: SubmitHospitalRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

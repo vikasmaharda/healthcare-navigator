@@ -8,7 +8,12 @@ export const Route = createFileRoute("/ai-assistant")({ component: Page });
 
 type Msg = { role: "user" | "assistant"; content: string };
 
-const EXAMPLES = ["I have fever and headache for 2 days", "Sharp chest pain when I breathe", "Toddler has rash on cheeks", "Persistent cough for 3 weeks"];
+const EXAMPLES = [
+  "I'm 32, male. Fever 101°F and headache for 2 days.",
+  "My son is 5 years old, has rash on cheeks since this morning.",
+  "I'm 58, sharp chest pain when I breathe, started 1 hour ago.",
+  "I'm 28, female. Persistent dry cough for 3 weeks, no fever.",
+];
 
 function Page() {
   const [messages, setMessages] = useState<Msg[]>([]);
