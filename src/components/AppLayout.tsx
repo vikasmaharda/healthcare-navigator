@@ -1,13 +1,15 @@
 import { Link, useLocation, Outlet } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Activity, Stethoscope, CalendarCheck, Siren, Bot, Droplet, Pill, Landmark, FileHeart, LogIn, LogOut, Menu, X, Moon, Sun, Languages } from "lucide-react";
+import { Activity, Stethoscope, CalendarCheck, Siren, Bot, Droplet, Pill, Landmark, FileHeart, LogIn, LogOut, Menu, X, Moon, Sun, Languages, MapPin, Plus, LifeBuoy, Shield } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { I18nContext, dict, type Lang } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
+import { isAdmin } from "@/lib/admin";
 
 const NAV = [
   { to: "/", labelKey: "home", icon: Activity },
   { to: "/hospitals", labelKey: "hospitals", icon: Stethoscope },
+  { to: "/nearby", labelKey: "nearby", icon: MapPin },
   { to: "/doctors", labelKey: "doctors", icon: Stethoscope },
   { to: "/appointments", labelKey: "appointments", icon: CalendarCheck },
   { to: "/ai-assistant", labelKey: "ai", icon: Bot },
@@ -15,6 +17,7 @@ const NAV = [
   { to: "/pharmacy", labelKey: "pharmacy", icon: Pill },
   { to: "/schemes", labelKey: "schemes", icon: Landmark },
   { to: "/records", labelKey: "records", icon: FileHeart },
+  { to: "/help", labelKey: "help", icon: LifeBuoy },
 ] as const;
 
 export function AppLayout() {
