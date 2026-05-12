@@ -3,9 +3,25 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import { fallback, zodValidator } from "@tanstack/zod-adapter";
+import Fuse from "fuse.js";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, MapPin, Star, Bed, Stethoscope, ShieldCheck, IndianRupee, GitCompare, Filter } from "lucide-react";
+import { Search, MapPin, Star, Bed, Stethoscope, IndianRupee, GitCompare, Filter, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+// Symptom → specialty hints. Fuzzy-matched so typos still route correctly ("chst pian" → cardiology).
+const SYMPTOM_HINTS: Record<string, string[]> = {
+  "chest pain": ["Cardiology"], "heart attack": ["Cardiology"], "palpitations": ["Cardiology"], "high bp": ["Cardiology"], "hypertension": ["Cardiology"],
+  "stroke": ["Neurology"], "headache": ["Neurology", "General Medicine"], "migraine": ["Neurology"], "seizure": ["Neurology"], "paralysis": ["Neurology"],
+  "fracture": ["Orthopedics"], "bone pain": ["Orthopedics"], "back pain": ["Orthopedics"], "knee pain": ["Orthopedics"], "joint pain": ["Orthopedics"],
+  "fever": ["General Medicine", "Pediatrics"], "cough": ["General Medicine"], "cold": ["General Medicine"], "diabetes": ["General Medicine"],
+  "child fever": ["Pediatrics"], "baby vaccination": ["Pediatrics"], "infant": ["Pediatrics"], "newborn": ["Pediatrics"],
+  "skin rash": ["Dermatology"], "acne": ["Dermatology"], "eczema": ["Dermatology"],
+  "cancer": ["Oncology"], "tumor": ["Oncology"], "chemo": ["Oncology"],
+  "tooth pain": ["Dental"], "gum bleeding": ["Dental"], "cavity": ["Dental"],
+  "pregnancy": ["Gynaecology"], "delivery": ["Gynaecology"], "period pain": ["Gynaecology"],
+  "ear pain": ["ENT"], "throat infection": ["ENT"], "hearing loss": ["ENT"],
+  "eye pain": ["Ophthalmology"], "blurry vision": ["Ophthalmology"], "cataract": ["Ophthalmology"],
+};
 
 const schema = z.object({
   q: fallback(z.string(), "").default(""),
@@ -41,24 +57,52 @@ function HospitalsPage() {
     },
   });
 
-  const filtered = useMemo(() => {
-    const text = (search.q || "").toLowerCase();
-    return hospitals.filter((h: any) => {
+  // Pre-filtered (city/specialty/flags) before fuzzy search
+  const prefiltered = useMemo(() => {
+    return (hospitals as any[]).filter((h) => {
       if (search.city && h.city !== search.city) return false;
       if (search.specialty && !(h.specialties || []).some((s: string) => s.toLowerCase().includes(search.specialty.toLowerCase()))) return false;
       if (search.govt && !h.is_government) return false;
       if (search.emergency && !h.emergency_24x7) return false;
-      if (!text) return true;
-      const hay = `${h.name} ${h.city} ${h.address ?? ""} ${(h.specialties || []).join(" ")}`.toLowerCase();
-      // simple symptom routing
-      if (text.includes("chest") || text.includes("heart")) return hay.includes("cardiology") || h.has_icu;
-      if (text.includes("bone") || text.includes("fracture")) return hay.includes("orthopedic");
-      if (text.includes("child") || text.includes("baby")) return hay.includes("pediatric");
-      if (text.includes("skin")) return hay.includes("dermatolog");
-      if (text.includes("brain") || text.includes("stroke")) return hay.includes("neuro");
-      return hay.includes(text);
+      return true;
     });
-  }, [hospitals, search]);
+  }, [hospitals, search.city, search.specialty, search.govt, search.emergency]);
+
+  const fuse = useMemo(
+    () =>
+      new Fuse(prefiltered, {
+        includeScore: true,
+        threshold: 0.4, // typo tolerance
+        ignoreLocation: true,
+        keys: [
+          { name: "name", weight: 0.5 },
+          { name: "city", weight: 0.25 },
+          { name: "address", weight: 0.1 },
+          { name: "specialties", weight: 0.4 },
+        ],
+      }),
+    [prefiltered],
+  );
+
+  const filtered = useMemo(() => {
+    const raw = (search.q || "").trim();
+    if (!raw) return prefiltered;
+
+    // Symptom routing — fuzzy-match the query against known symptom phrases
+    const hintFuse = new Fuse(Object.keys(SYMPTOM_HINTS), { threshold: 0.4, ignoreLocation: true });
+    const hintMatches = hintFuse.search(raw.toLowerCase()).slice(0, 2);
+    const hintedSpecs = hintMatches.flatMap((m) => SYMPTOM_HINTS[m.item]);
+
+    const direct = fuse.search(raw).map((r) => r.item);
+    if (hintedSpecs.length === 0) return direct;
+
+    const specMatches = prefiltered.filter((h: any) =>
+      (h.specialties || []).some((s: string) => hintedSpecs.some((hs) => s.toLowerCase().includes(hs.toLowerCase()))),
+    );
+    // Merge, dedupe, keep direct matches first
+    const seen = new Set<string>();
+    return [...direct, ...specMatches].filter((h: any) => (seen.has(h.id) ? false : (seen.add(h.id), true)));
+  }, [fuse, prefiltered, search.q]);
 
   const update = (patch: Partial<typeof search>) =>
     nav({ search: (prev: typeof search) => ({ ...prev, ...patch }) });
@@ -70,18 +114,23 @@ function HospitalsPage() {
           <h1 className="font-display text-3xl font-bold">Hospitals</h1>
           <p className="text-muted-foreground">Search by name, city, specialty or symptom.</p>
         </div>
-        {compare.length >= 2 && (
-          <Link to="/compare" search={{ ids: compare.join(",") }}>
-            <Button><GitCompare className="size-4 mr-2" />Compare ({compare.length})</Button>
+        <div className="flex gap-2">
+          <Link to="/submit-hospital">
+            <Button variant="outline"><Plus className="size-4 mr-2" />Add hospital</Button>
           </Link>
-        )}
+          {compare.length >= 2 && (
+            <Link to="/compare" search={{ ids: compare.join(",") }}>
+              <Button><GitCompare className="size-4 mr-2" />Compare ({compare.length})</Button>
+            </Link>
+          )}
+        </div>
       </div>
 
       <div className="bg-card border border-border rounded-2xl p-4 shadow-soft mb-6">
         <form onSubmit={(e) => { e.preventDefault(); update({ q }); }} className="flex flex-wrap gap-2 items-center">
           <div className="flex-1 min-w-[240px] flex items-center gap-2 px-3 py-2 rounded-lg bg-muted">
             <Search className="size-4 text-muted-foreground" />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search hospitals or symptoms" className="flex-1 bg-transparent outline-none text-sm" />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Try 'chest pain', 'AIIMS', 'cardilogy Mumbai' (typos OK)" className="flex-1 bg-transparent outline-none text-sm" />
           </div>
           <select value={search.city} onChange={(e) => update({ city: e.target.value })} className="px-3 py-2 rounded-lg bg-muted text-sm">
             <option value="">All cities</option>
