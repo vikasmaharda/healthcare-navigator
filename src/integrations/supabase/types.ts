@@ -163,6 +163,42 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_messages: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          email: string
+          id: string
+          message: string
+          name: string
+          resolved: boolean | null
+          subject: string | null
+          user_id: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          email: string
+          id?: string
+          message: string
+          name: string
+          resolved?: boolean | null
+          subject?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          resolved?: boolean | null
+          subject?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       doctors: {
         Row: {
           available_days: string[] | null
@@ -324,6 +360,75 @@ export type Database = {
           phone?: string | null
           rating?: number | null
           specialties?: string[] | null
+        }
+        Relationships: []
+      }
+      pending_hospitals: {
+        Row: {
+          address: string | null
+          ayushman: boolean | null
+          city: string
+          created_at: string | null
+          emergency_24x7: boolean | null
+          has_ambulance: boolean | null
+          has_icu: boolean | null
+          has_mri: boolean | null
+          id: string
+          is_government: boolean | null
+          lat: number | null
+          lng: number | null
+          name: string
+          notes: string | null
+          phone: string | null
+          reviewed_at: string | null
+          specialties: string[] | null
+          status: string
+          submitted_by: string | null
+          submitter_email: string | null
+        }
+        Insert: {
+          address?: string | null
+          ayushman?: boolean | null
+          city: string
+          created_at?: string | null
+          emergency_24x7?: boolean | null
+          has_ambulance?: boolean | null
+          has_icu?: boolean | null
+          has_mri?: boolean | null
+          id?: string
+          is_government?: boolean | null
+          lat?: number | null
+          lng?: number | null
+          name: string
+          notes?: string | null
+          phone?: string | null
+          reviewed_at?: string | null
+          specialties?: string[] | null
+          status?: string
+          submitted_by?: string | null
+          submitter_email?: string | null
+        }
+        Update: {
+          address?: string | null
+          ayushman?: boolean | null
+          city?: string
+          created_at?: string | null
+          emergency_24x7?: boolean | null
+          has_ambulance?: boolean | null
+          has_icu?: boolean | null
+          has_mri?: boolean | null
+          id?: string
+          is_government?: boolean | null
+          lat?: number | null
+          lng?: number | null
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          reviewed_at?: string | null
+          specialties?: string[] | null
+          status?: string
+          submitted_by?: string | null
+          submitter_email?: string | null
         }
         Relationships: []
       }
