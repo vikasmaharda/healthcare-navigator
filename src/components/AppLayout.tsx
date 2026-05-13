@@ -58,13 +58,13 @@ export function AppLayout() {
               <span className="font-display text-xl font-bold tracking-tight">MediRoute</span>
             </Link>
 
-            <nav className="hidden lg:flex items-center gap-1">
+            <nav className="hidden xl:flex items-center gap-0.5 flex-1 justify-center min-w-0">
               {NAV.map(n => (
                 <Link
                   key={n.to}
                   to={n.to}
-                  className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                  activeProps={{ className: "px-3 py-2 rounded-md text-sm font-medium text-foreground bg-muted" }}
+                  className="px-2.5 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors whitespace-nowrap"
+                  activeProps={{ className: "px-2.5 py-2 rounded-md text-sm font-medium text-foreground bg-muted whitespace-nowrap" }}
                   activeOptions={{ exact: n.to === "/" }}
                 >
                   {t(n.labelKey)}
