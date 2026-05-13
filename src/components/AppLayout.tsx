@@ -72,8 +72,8 @@ export function AppLayout() {
               ))}
             </nav>
 
-            <div className="flex items-center gap-2">
-              <Link to="/emergency" className="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-lg gradient-emergency text-emergency-foreground text-sm font-semibold shadow-soft hover:opacity-90">
+            <div className="flex items-center gap-1.5 shrink-0">
+              <Link to="/emergency" className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg gradient-emergency text-emergency-foreground text-xs font-semibold shadow-soft hover:opacity-90">
                 <Siren className="size-4" /> SOS
               </Link>
               <button onClick={() => setLangP(lang === "en" ? "hi" : "en")} className="p-2 rounded-md hover:bg-muted text-muted-foreground" aria-label="Language">
@@ -88,11 +88,11 @@ export function AppLayout() {
                 </Link>
               )}
               {user ? (
-                <Button variant="outline" size="sm" onClick={signOut}><LogOut className="size-4 mr-1" />{t("logout")}</Button>
+                <Button variant="outline" size="sm" onClick={signOut}><LogOut className="size-4 sm:mr-1" /><span className="hidden sm:inline">{t("logout")}</span></Button>
               ) : (
-                <Link to="/login"><Button size="sm"><LogIn className="size-4 mr-1" />{t("login")}</Button></Link>
+                <Link to="/login"><Button size="sm"><LogIn className="size-4 sm:mr-1" /><span className="hidden sm:inline">{t("login")}</span></Button></Link>
               )}
-              <button className="lg:hidden p-2 rounded-md hover:bg-muted" onClick={() => setOpen(o => !o)} aria-label="Menu">
+              <button className="xl:hidden p-2 rounded-md hover:bg-muted" onClick={() => setOpen(o => !o)} aria-label="Menu">
                 {open ? <X className="size-5" /> : <Menu className="size-5" />}
               </button>
             </div>
