@@ -99,7 +99,7 @@ export function AppLayout() {
           </div>
 
           {open && (
-            <div className="lg:hidden border-t border-border bg-card">
+            <div className="xl:hidden border-t border-border bg-card">
               <div className="px-4 py-3 grid grid-cols-2 gap-1">
                 {NAV.map(n => {
                   const Icon = n.icon;
