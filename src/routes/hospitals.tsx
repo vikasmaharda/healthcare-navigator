@@ -106,6 +106,11 @@ function HospitalsPage() {
     return [...direct, ...specMatches].filter((h: any) => (seen.has(h.id) ? false : (seen.add(h.id), true)));
   }, [fuse, prefiltered, search.q]);
 
+  // Reset to page 1 whenever filters/query change
+  useEffect(() => { setPage(1); }, [search.q, search.city, search.specialty, search.govt, search.emergency]);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const pageItems = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
   const update = (patch: Partial<typeof search>) =>
     nav({ search: (prev: typeof search) => ({ ...prev, ...patch }) });
 
