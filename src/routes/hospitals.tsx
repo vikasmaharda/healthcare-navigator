@@ -44,6 +44,8 @@ function HospitalsPage() {
   const nav = useNavigate({ from: "/hospitals" });
   const [q, setQ] = useState(search.q);
   useEffect(() => setQ(search.q), [search.q]);
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 20;
 
   const [compare, setCompare] = useState<string[]>([]);
   const toggleCompare = (id: string) => setCompare(c => c.includes(id) ? c.filter(x => x!==id) : c.length<3 ? [...c, id] : c);
@@ -104,6 +106,11 @@ function HospitalsPage() {
     return [...direct, ...specMatches].filter((h: any) => (seen.has(h.id) ? false : (seen.add(h.id), true)));
   }, [fuse, prefiltered, search.q]);
 
+  // Reset to page 1 whenever filters/query change
+  useEffect(() => { setPage(1); }, [search.q, search.city, search.specialty, search.govt, search.emergency]);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const pageItems = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
   const update = (patch: Partial<typeof search>) =>
     nav({ search: (prev: typeof search) => ({ ...prev, ...patch }) });
 
@@ -155,60 +162,70 @@ function HospitalsPage() {
       ) : filtered.length === 0 ? (
         <div className="p-12 text-center bg-card border border-border rounded-2xl text-muted-foreground">No hospitals match your filters.</div>
       ) : (
-        <div className="grid gap-4 lg:grid-cols-2">
-          {filtered.map((h: any) => {
-            const beds = Array.isArray(h.beds) ? h.beds[0] : h.beds;
-            const checked = compare.includes(h.id);
-            return (
-              <article key={h.id} className="p-5 rounded-2xl bg-card border border-border hover:shadow-soft transition">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <h3 className="font-semibold text-lg">{h.name}</h3>
-                    <div className="text-sm text-muted-foreground flex items-center gap-1 mt-0.5"><MapPin className="size-3.5" />{h.city} · {h.address}</div>
-                    <div className="flex flex-wrap gap-1.5 mt-3">
-                      {h.emergency_24x7 && <Tag tone="success">24×7 ER</Tag>}
-                      {h.has_icu && <Tag>ICU</Tag>}
-                      {h.has_mri && <Tag>MRI</Tag>}
-                      {h.has_ambulance && <Tag>Ambulance</Tag>}
-                      {h.is_government && <Tag tone="primary">Govt</Tag>}
-                      {h.ayushman && <Tag tone="primary">Ayushman</Tag>}
+        <>
+          <div className="mb-3 text-xs text-muted-foreground">Showing {(page-1)*PAGE_SIZE + 1}–{Math.min(page*PAGE_SIZE, filtered.length)} of {filtered.length}</div>
+          <div className="grid gap-4 lg:grid-cols-2">
+            {pageItems.map((h: any) => {
+              const beds = Array.isArray(h.beds) ? h.beds[0] : h.beds;
+              const checked = compare.includes(h.id);
+              return (
+                <article key={h.id} className="p-5 rounded-2xl bg-card border border-border hover:shadow-soft transition">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h3 className="font-semibold text-lg">{h.name}</h3>
+                      <div className="text-sm text-muted-foreground flex items-center gap-1 mt-0.5"><MapPin className="size-3.5" />{h.city} · {h.address}</div>
+                      <div className="flex flex-wrap gap-1.5 mt-3">
+                        {h.emergency_24x7 && <Tag tone="success">24×7 ER</Tag>}
+                        {h.has_icu && <Tag>ICU</Tag>}
+                        {h.has_mri && <Tag>MRI</Tag>}
+                        {h.has_ambulance && <Tag>Ambulance</Tag>}
+                        {h.is_government && <Tag tone="primary">Govt</Tag>}
+                        {h.ayushman && <Tag tone="primary">Ayushman</Tag>}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-warning/15 text-warning-foreground text-sm font-semibold">
+                        <Star className="size-3.5 fill-current" /> {Number(h.rating).toFixed(1)}
+                      </div>
+                      <div className="mt-2 text-xs text-muted-foreground inline-flex items-center"><IndianRupee className="size-3" />{h.cost_tier}</div>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-warning/15 text-warning-foreground text-sm font-semibold">
-                      <Star className="size-3.5 fill-current" /> {Number(h.rating).toFixed(1)}
+                  <div className="flex flex-wrap gap-1.5 mt-3">
+                    {(h.specialties || []).slice(0,4).map((s: string) => (
+                      <span key={s} className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">{s}</span>
+                    ))}
+                  </div>
+                  {beds && (
+                    <div className="mt-4 grid grid-cols-4 gap-2 text-center text-xs">
+                      <BedStat label="ICU" v={beds.icu_available} />
+                      <BedStat label="Oxygen" v={beds.oxygen_available} />
+                      <BedStat label="Emergency" v={beds.emergency_available} />
+                      <BedStat label="General" v={beds.general_available} />
                     </div>
-                    <div className="mt-2 text-xs text-muted-foreground inline-flex items-center"><IndianRupee className="size-3" />{h.cost_tier}</div>
+                  )}
+                  <div className="mt-4 flex items-center justify-between">
+                    <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <input type="checkbox" checked={checked} onChange={() => toggleCompare(h.id)} /> Compare
+                    </label>
+                    <div className="flex gap-2">
+                      <Link to="/doctors" search={{ hospital: h.id }}><Button variant="outline" size="sm"><Stethoscope className="size-4 mr-1" />Doctors</Button></Link>
+                      <a href={`https://www.google.com/maps/search/${encodeURIComponent(h.name + " " + h.city)}`} target="_blank" rel="noreferrer">
+                        <Button size="sm"><MapPin className="size-4 mr-1" />Directions</Button>
+                      </a>
+                    </div>
                   </div>
-                </div>
-                <div className="flex flex-wrap gap-1.5 mt-3">
-                  {(h.specialties || []).slice(0,4).map((s: string) => (
-                    <span key={s} className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">{s}</span>
-                  ))}
-                </div>
-                {beds && (
-                  <div className="mt-4 grid grid-cols-4 gap-2 text-center text-xs">
-                    <BedStat label="ICU" v={beds.icu_available} />
-                    <BedStat label="Oxygen" v={beds.oxygen_available} />
-                    <BedStat label="Emergency" v={beds.emergency_available} />
-                    <BedStat label="General" v={beds.general_available} />
-                  </div>
-                )}
-                <div className="mt-4 flex items-center justify-between">
-                  <label className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <input type="checkbox" checked={checked} onChange={() => toggleCompare(h.id)} /> Compare
-                  </label>
-                  <div className="flex gap-2">
-                    <Link to="/doctors" search={{ hospital: h.id }}><Button variant="outline" size="sm"><Stethoscope className="size-4 mr-1" />Doctors</Button></Link>
-                    <a href={`https://www.google.com/maps/search/${encodeURIComponent(h.name + " " + h.city)}`} target="_blank" rel="noreferrer">
-                      <Button size="sm"><MapPin className="size-4 mr-1" />Directions</Button>
-                    </a>
-                  </div>
-                </div>
-              </article>
-            );
-          })}
-        </div>
+                </article>
+              );
+            })}
+          </div>
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-6">
+              <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage(p => Math.max(1, p-1))}>Previous</Button>
+              <span className="text-sm text-muted-foreground">Page {page} of {totalPages}</span>
+              <Button variant="outline" size="sm" disabled={page === totalPages} onClick={() => setPage(p => Math.min(totalPages, p+1))}>Next</Button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
