@@ -363,7 +363,7 @@ function DoctorForm({ initial, hospitals, onSubmit, onCancel }: { initial?: any;
       await onSubmit({ ...v,
         hospital_id: v.hospital_id || null,
         experience_years: Number(v.experience_years), consultation_fee: Number(v.consultation_fee), rating: Number(v.rating),
-        available_days: v.available_days.split(",").map(s=>s.trim()).filter(Boolean),
+        available_days: v.available_days.split(",").map((s: string)=>s.trim()).filter(Boolean),
         avatar_url: v.avatar_url || null,
       });
     } finally { setBusy(false); } }} className="grid gap-2 p-3 rounded-lg bg-muted/30">
