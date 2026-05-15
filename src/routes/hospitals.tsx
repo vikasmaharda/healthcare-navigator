@@ -44,6 +44,8 @@ function HospitalsPage() {
   const nav = useNavigate({ from: "/hospitals" });
   const [q, setQ] = useState(search.q);
   useEffect(() => setQ(search.q), [search.q]);
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 20;
 
   const [compare, setCompare] = useState<string[]>([]);
   const toggleCompare = (id: string) => setCompare(c => c.includes(id) ? c.filter(x => x!==id) : c.length<3 ? [...c, id] : c);
