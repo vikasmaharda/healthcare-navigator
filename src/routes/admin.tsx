@@ -247,7 +247,7 @@ function HospitalForm({ initial, onSubmit, onCancel }: { initial?: any; onSubmit
       try {
         await onSubmit({
           ...v,
-          specialties: v.specialties.split(",").map(s => s.trim()).filter(Boolean),
+          specialties: v.specialties.split(",").map((s: string) => s.trim()).filter(Boolean),
           lat: v.lat === "" ? null : Number(v.lat),
           lng: v.lng === "" ? null : Number(v.lng),
           rating: Number(v.rating),
