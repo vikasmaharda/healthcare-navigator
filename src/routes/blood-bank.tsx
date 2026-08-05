@@ -21,13 +21,16 @@ function Page() {
     queryKey: ["blood-banks"], queryFn: async () => (await supabase.from("blood_banks").select("*")).data ?? [],
   });
   const { data: donors = [] } = useQuery({
-    queryKey: ["donors", group, city], queryFn: async () => {
+    queryKey: ["donors", group, city, user?.id ?? null],
+    enabled: !!user,
+    queryFn: async () => {
       let q = supabase.from("blood_donors").select("*").eq("available", true);
       if (group) q = q.eq("blood_group", group);
       if (city) q = q.ilike("city", `%${city}%`);
       const { data } = await q; return data ?? [];
     },
   });
+
 
   const [donorName, setDonorName] = useState("");
   const [donorGroup, setDonorGroup] = useState("O+");
