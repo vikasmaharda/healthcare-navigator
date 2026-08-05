@@ -41,9 +41,59 @@ End every reply with this line:
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   try {
-    const { messages } = await req.json();
+    // --- Require an authenticated user ---
+    const authHeader = req.headers.get("authorization") ?? "";
+    const token = authHeader.toLowerCase().startsWith("bearer ") ? authHeader.slice(7).trim() : "";
+    if (!token) {
+      return new Response(JSON.stringify({ error: "Please sign in to use the assistant." }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
+    if (!supabaseUrl || !anonKey) throw new Error("Supabase env missing");
+
+    const userResp = await fetch(`${supabaseUrl}/auth/v1/user`, {
+      headers: { Authorization: `Bearer ${token}`, apikey: anonKey },
+    });
+    if (!userResp.ok) {
+      return new Response(JSON.stringify({ error: "Please sign in to use the assistant." }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const user = await userResp.json();
+    if (!user?.id) {
+      return new Response(JSON.stringify({ error: "Please sign in to use the assistant." }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // --- Validate input ---
+    const body = await req.json().catch(() => null);
+    const messages = body?.messages;
+    if (!Array.isArray(messages) || messages.length === 0 || messages.length > 30) {
+      return new Response(JSON.stringify({ error: "Invalid request." }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const clean: { role: string; content: string }[] = [];
+    for (const m of messages) {
+      if (!m || (m.role !== "user" && m.role !== "assistant")) {
+        return new Response(JSON.stringify({ error: "Invalid request." }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (typeof m.content !== "string" || m.content.length > 2000) {
+        return new Response(JSON.stringify({ error: "Message too long." }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      clean.push({ role: m.role, content: m.content });
+    }
+
     const key = Deno.env.get("LOVABLE_API_KEY");
     if (!key) throw new Error("LOVABLE_API_KEY missing");
+
 
     const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
