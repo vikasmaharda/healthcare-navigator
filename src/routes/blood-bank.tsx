@@ -95,8 +95,11 @@ function Page() {
           </ul>
 
           <h2 className="font-display text-xl font-bold mt-8 mb-3">Available donors</h2>
-          {donors.length === 0 ? (
+          {!user ? (
+            <p className="text-sm text-muted-foreground">Please log in to view donor contact details. This protects donors' personal information.</p>
+          ) : donors.length === 0 ? (
             <p className="text-sm text-muted-foreground">No donors yet for this filter.</p>
+
           ) : (
             <ul className="grid sm:grid-cols-2 gap-3">
               {donors.map((d: any) => (
