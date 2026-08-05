@@ -78,10 +78,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "description", content: "Find hospitals, doctors, ICU beds, blood and emergency help. AI symptom assistant. India-first." },
       { name: "author", content: "MediRoute" },
       { property: "og:title", content: "MediRoute — Healthcare Navigation Platform" },
-      { property: "og:description", content: "Find hospitals, doctors, ICU beds, blood and emergency help. AI symptom assistant." },
+      { property: "og:description", content: "Find hospitals, doctors, ICU beds, blood and emergency help. AI symptom assistant. India-first." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "MediRoute — Healthcare Navigation Platform" },
+      { name: "twitter:description", content: "Find hospitals, doctors, ICU beds, blood and emergency help. AI symptom assistant. India-first." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/2002c641-7d84-4824-b757-0bca89067190" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/2002c641-7d84-4824-b757-0bca89067190" },
     ],
     links: [
       {
