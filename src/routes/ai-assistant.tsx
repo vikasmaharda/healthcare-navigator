@@ -3,6 +3,8 @@ import { useRef, useState } from "react";
 import { Bot, Send, Mic, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+
 
 export const Route = createFileRoute("/ai-assistant")({ component: Page });
 
