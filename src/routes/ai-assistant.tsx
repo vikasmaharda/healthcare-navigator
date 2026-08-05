@@ -3,6 +3,8 @@ import { useRef, useState } from "react";
 import { Bot, Send, Mic, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+
 
 export const Route = createFileRoute("/ai-assistant")({ component: Page });
 
@@ -24,25 +26,35 @@ function Page() {
   const send = async (text?: string) => {
     const content = (text ?? input).trim();
     if (!content || busy) return;
+    if (content.length > 2000) { toast.error("Message is too long."); return; }
     const next: Msg[] = [...messages, { role: "user", content }];
     setMessages(next);
     setInput("");
     setBusy(true);
 
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        toast.error("Please log in to use the AI assistant.");
+        setBusy(false);
+        return;
+      }
       const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/symptom-assistant`;
       const resp = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          Authorization: `Bearer ${session.access_token}`,
         },
-        body: JSON.stringify({ messages: next }),
+        body: JSON.stringify({ messages: next.slice(-20) }),
       });
 
+      if (resp.status === 401) { toast.error("Please log in to use the AI assistant."); setBusy(false); return; }
       if (resp.status === 429) { toast.error("Rate limit reached. Please wait a moment."); setBusy(false); return; }
       if (resp.status === 402) { toast.error("AI credits exhausted. Add credits in Settings → Workspace → Usage."); setBusy(false); return; }
       if (!resp.ok || !resp.body) { toast.error("AI request failed"); setBusy(false); return; }
+
 
       const reader = resp.body.getReader();
       const dec = new TextDecoder();
