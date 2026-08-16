@@ -543,28 +543,40 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_url: string | null
           blood_group: string | null
           created_at: string
+          dob: string | null
+          email: string | null
           emergency_contact: string | null
           full_name: string | null
+          gender: string | null
           id: string
           language: string | null
           phone: string | null
         }
         Insert: {
+          avatar_url?: string | null
           blood_group?: string | null
           created_at?: string
+          dob?: string | null
+          email?: string | null
           emergency_contact?: string | null
           full_name?: string | null
+          gender?: string | null
           id: string
           language?: string | null
           phone?: string | null
         }
         Update: {
+          avatar_url?: string | null
           blood_group?: string | null
           created_at?: string
+          dob?: string | null
+          email?: string | null
           emergency_contact?: string | null
           full_name?: string | null
+          gender?: string | null
           id?: string
           language?: string | null
           phone?: string | null
