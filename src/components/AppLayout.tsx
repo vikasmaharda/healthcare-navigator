@@ -50,53 +50,99 @@ export function AppLayout() {
     <I18nContext.Provider value={{ lang, setLang: setLangP, t }}>
       <div className="min-h-screen flex flex-col">
         <header className="sticky top-0 z-40 glass border-b border-border">
-          <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
-            <Link to="/" className="flex items-center gap-2 group">
-              <div className="size-9 rounded-xl gradient-primary grid place-items-center shadow-soft">
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 h-16 flex items-center gap-2 sm:gap-3">
+            <Link to="/" className="flex items-center gap-2 shrink-0">
+              <div className="size-9 rounded-xl gradient-primary grid place-items-center shadow-soft shrink-0">
                 <Activity className="size-5 text-primary-foreground" />
               </div>
-              <span className="font-display text-xl font-bold tracking-tight">MediRoute</span>
+              <span className="font-display text-lg sm:text-xl font-bold tracking-tight hidden xs:inline sm:inline">MediRoute</span>
             </Link>
 
-            <nav className="hidden xl:flex items-center gap-0.5 flex-1 justify-center min-w-0">
-              {NAV.map(n => (
+            <nav className="hidden lg:flex items-center gap-0.5 flex-1 min-w-0 justify-center overflow-hidden">
+              {PRIMARY_NAV.map(n => (
                 <Link
                   key={n.to}
                   to={n.to}
-                  className="px-2.5 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors whitespace-nowrap"
-                  activeProps={{ className: "px-2.5 py-2 rounded-md text-sm font-medium text-foreground bg-muted whitespace-nowrap" }}
+                  className="px-2 xl:px-2.5 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors whitespace-nowrap"
+                  activeProps={{ className: "px-2 xl:px-2.5 py-2 rounded-md text-sm font-medium text-foreground bg-muted whitespace-nowrap" }}
                   activeOptions={{ exact: n.to === "/" }}
                 >
                   {t(n.labelKey)}
                 </Link>
               ))}
+              <DropdownMenu>
+                <DropdownMenuTrigger className="px-2 xl:px-2.5 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors whitespace-nowrap inline-flex items-center gap-1">
+                  More <ChevronDown className="size-3.5" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-52 z-50 bg-popover">
+                  {SECONDARY_NAV.map(n => {
+                    const Icon = n.icon;
+                    return (
+                      <DropdownMenuItem key={n.to} asChild>
+                        <Link to={n.to} className="flex items-center gap-2 cursor-pointer">
+                          <Icon className="size-4 text-primary" /> {t(n.labelKey)}
+                        </Link>
+                      </DropdownMenuItem>
+                    );
+                  })}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </nav>
 
-            <div className="flex items-center gap-1.5 shrink-0">
-              <Link to="/emergency" className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg gradient-emergency text-emergency-foreground text-xs font-semibold shadow-soft hover:opacity-90">
+            <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 ml-auto">
+              <Link to="/emergency" className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg gradient-emergency text-emergency-foreground text-xs font-semibold shadow-soft hover:opacity-90 whitespace-nowrap">
                 <Siren className="size-4" /> SOS
               </Link>
-              <button onClick={() => setLangP(lang === "en" ? "hi" : "en")} className="p-2 rounded-md hover:bg-muted text-muted-foreground" aria-label="Language">
+              <button onClick={() => setLangP(lang === "en" ? "hi" : "en")} className="hidden sm:inline-flex p-2 rounded-md hover:bg-muted text-muted-foreground" aria-label="Language">
                 <Languages className="size-4" />
               </button>
               <button onClick={toggleTheme} className="p-2 rounded-md hover:bg-muted text-muted-foreground" aria-label="Theme">
                 {dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
               </button>
-              {isAdmin(user?.email) && (
-                <Link to="/admin" className="hidden md:inline-flex items-center gap-1 px-2 py-1.5 rounded-md text-xs font-semibold bg-primary/15 text-primary hover:bg-primary/25">
-                  <Shield className="size-3.5" /> Admin
+
+              {user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="inline-flex items-center gap-2 pl-1 pr-2 py-1 rounded-full border border-border hover:bg-muted max-w-[190px]">
+                    <span className="size-7 rounded-full gradient-primary grid place-items-center text-primary-foreground text-xs font-bold shrink-0">
+                      {(user.user_metadata?.full_name || user.email || "U").charAt(0).toUpperCase()}
+                    </span>
+                    <span className="hidden md:block text-sm truncate max-w-[110px]">
+                      {user.user_metadata?.full_name || user.email}
+                    </span>
+                    <ChevronDown className="size-3.5 text-muted-foreground shrink-0" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-60 z-50 bg-popover">
+                    <div className="px-2 py-1.5 text-xs text-muted-foreground truncate">{user.email}</div>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link to="/records" className="flex items-center gap-2 cursor-pointer"><FileHeart className="size-4" /> {t("records")}</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/appointments" className="flex items-center gap-2 cursor-pointer"><CalendarCheck className="size-4" /> {t("appointments")}</Link>
+                    </DropdownMenuItem>
+                    {isAdmin(user?.email) && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/admin" className="flex items-center gap-2 cursor-pointer text-primary"><Shield className="size-4" /> Admin</Link>
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={signOut} className="flex items-center gap-2 cursor-pointer">
+                      <LogOut className="size-4" /> {t("logout")}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Link to="/login">
+                  <Button size="sm" className="whitespace-nowrap"><LogIn className="size-4 sm:mr-1" /><span className="hidden sm:inline">{t("login")}</span></Button>
                 </Link>
               )}
-              {user ? (
-                <Button variant="outline" size="sm" onClick={signOut}><LogOut className="size-4 sm:mr-1" /><span className="hidden sm:inline">{t("logout")}</span></Button>
-              ) : (
-                <Link to="/login"><Button size="sm"><LogIn className="size-4 sm:mr-1" /><span className="hidden sm:inline">{t("login")}</span></Button></Link>
-              )}
-              <button className="xl:hidden p-2 rounded-md hover:bg-muted" onClick={() => setOpen(o => !o)} aria-label="Menu">
+
+              <button className="lg:hidden p-2 rounded-md hover:bg-muted" onClick={() => setOpen(o => !o)} aria-label="Menu">
                 {open ? <X className="size-5" /> : <Menu className="size-5" />}
               </button>
             </div>
           </div>
+
 
           {open && (
             <div className="xl:hidden border-t border-border bg-card">
