@@ -66,7 +66,7 @@ export function AppLayout() {
               <div className="size-9 rounded-xl gradient-primary grid place-items-center shadow-soft shrink-0">
                 <Activity className="size-5 text-primary-foreground" />
               </div>
-              <span className="font-display text-lg sm:text-xl font-bold tracking-tight hidden xs:inline sm:inline">MediRoute</span>
+              <span className="font-display text-lg sm:text-xl font-bold tracking-tight">MediRoute</span>
             </Link>
 
             <nav className="hidden lg:flex items-center gap-0.5 flex-1 min-w-0 justify-center overflow-hidden">
