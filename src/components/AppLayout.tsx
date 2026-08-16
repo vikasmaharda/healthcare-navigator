@@ -1,9 +1,16 @@
 import { Link, useLocation, Outlet } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Activity, Stethoscope, CalendarCheck, Siren, Bot, Droplet, Pill, Landmark, FileHeart, LogIn, LogOut, Menu, X, Moon, Sun, Languages, MapPin, Plus, LifeBuoy, Shield } from "lucide-react";
+import { Activity, Stethoscope, CalendarCheck, Siren, Bot, Droplet, Pill, Landmark, FileHeart, LogIn, LogOut, Menu, X, Moon, Sun, Languages, MapPin, Plus, LifeBuoy, Shield, ChevronDown } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { I18nContext, dict, type Lang } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { isAdmin } from "@/lib/admin";
 
 const NAV = [
@@ -19,6 +26,10 @@ const NAV = [
   { to: "/records", labelKey: "records", icon: FileHeart },
   { to: "/help", labelKey: "help", icon: LifeBuoy },
 ] as const;
+
+const PRIMARY_NAV = NAV.slice(0, 6);
+const SECONDARY_NAV = NAV.slice(6);
+
 
 export function AppLayout() {
   const { user, signOut } = useAuth();
