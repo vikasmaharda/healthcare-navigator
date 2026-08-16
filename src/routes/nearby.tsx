@@ -122,7 +122,7 @@ function NearbyPage() {
                 <div className="mt-2 flex gap-2">
                   <a
                     className="text-xs text-primary underline"
-                    href={`https://www.google.com/maps/dir/?api=1&destination=${h.lat},${h.lng}`}
+                    href={directionsLink(Number(h.lat), Number(h.lng), coords)}
                     target="_blank"
                     rel="noreferrer"
                   >
