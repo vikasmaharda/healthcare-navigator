@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Siren, Phone, MapPin, Droplet, Pill, Bot, Send, Baby, ShieldAlert } from "lucide-react";
+import { Phone, MapPin, Droplet, Pill, Bot, Baby, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LiveLocation } from "@/components/LiveLocation";
 
 export const Route = createFileRoute("/emergency")({ component: Page });
 
@@ -13,15 +14,6 @@ function Page() {
   const { data: hospitals = [] } = useQuery({
     queryKey: ["hospitals-er"], queryFn: async () => (await supabase.from("hospitals").select("*").eq("emergency_24x7", true).limit(6)).data ?? [],
   });
-
-  const sendLocation = () => {
-    if (!navigator.geolocation) return alert("Geolocation not supported");
-    navigator.geolocation.getCurrentPosition((pos) => {
-      const url = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
-      const text = encodeURIComponent(`I need help. My location: ${url}`);
-      window.open(`https://wa.me/?text=${text}`, "_blank");
-    }, () => alert("Could not get location"));
-  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10">
@@ -37,14 +29,16 @@ function Page() {
           </a>
         </div>
 
-        <div className="mt-8 grid sm:grid-cols-3 gap-3">
-          <Button variant="secondary" size="lg" onClick={sendLocation} className="bg-white/15 text-emergency-foreground hover:bg-white/25 border-0">
-            <Send className="size-4 mr-2" />Share live location
-          </Button>
+        <div className="mt-8 grid sm:grid-cols-2 gap-3">
           <Link to="/blood-bank"><Button variant="secondary" size="lg" className="w-full bg-white/15 text-emergency-foreground hover:bg-white/25 border-0"><Droplet className="size-4 mr-2" />Blood bank</Button></Link>
           <Link to="/pharmacy"><Button variant="secondary" size="lg" className="w-full bg-white/15 text-emergency-foreground hover:bg-white/25 border-0"><Pill className="size-4 mr-2" />24×7 Pharmacy</Button></Link>
         </div>
       </section>
+
+      <section className="mt-8">
+        <LiveLocation />
+      </section>
+
 
       <section className="mt-10 grid lg:grid-cols-2 gap-8">
         <div>

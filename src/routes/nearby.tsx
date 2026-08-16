@@ -1,41 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
-import { MapPin, Navigation, Loader2 } from "lucide-react";
+import { useMemo } from "react";
+import { MapPin, Navigation, Loader2, StopCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { distanceKm, formatKm } from "@/lib/distance";
+import { useGeolocation, mapsLink, directionsLink } from "@/hooks/use-geolocation";
 import { HospitalsMap, type HospitalPin } from "@/components/HospitalsMap";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/nearby")({ component: NearbyPage });
 
 function NearbyPage() {
-  const [user, setUser] = useState<[number, number] | null>(null);
-  const [geoErr, setGeoErr] = useState<string | null>(null);
-  const [locating, setLocating] = useState(false);
-
-  const requestLocation = () => {
-    if (!navigator.geolocation) {
-      setGeoErr("Geolocation isn't supported on this device.");
-      return;
-    }
-    setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setUser([pos.coords.latitude, pos.coords.longitude]);
-        setLocating(false);
-      },
-      (err) => {
-        setGeoErr(err.message);
-        setLocating(false);
-      },
-      { enableHighAccuracy: true, timeout: 10000 },
-    );
-  };
-
-  useEffect(() => {
-    requestLocation();
-  }, []);
+  const { coords, error: geoErr, loading: locating, watching, locate, startWatch, stopWatch } = useGeolocation();
+  const user: [number, number] | null = coords ? [coords.lat, coords.lng] : null;
 
   const { data: hospitals = [], isLoading } = useQuery({
     queryKey: ["hospitals-with-coords"],
@@ -74,17 +51,39 @@ function NearbyPage() {
       <div className="flex flex-wrap items-end justify-between gap-3 mb-6">
         <div>
           <h1 className="font-display text-3xl font-bold">Hospitals near you</h1>
-          <p className="text-muted-foreground">Allow location to see distance and the closest hospitals on the map.</p>
+          <p className="text-muted-foreground">
+            Allow location access so we can measure the real distance from you to each hospital. Your coordinates
+            are used only on this page and are never stored.
+          </p>
         </div>
-        <Button onClick={requestLocation} disabled={locating}>
-          {locating ? <Loader2 className="size-4 mr-2 animate-spin" /> : <Navigation className="size-4 mr-2" />}
-          {user ? "Recenter on me" : "Use my location"}
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button onClick={locate} disabled={locating}>
+            {locating ? <Loader2 className="size-4 mr-2 animate-spin" /> : <Navigation className="size-4 mr-2" />}
+            {coords ? "Recenter on me" : "Use my location"}
+          </Button>
+          {coords && (watching ? (
+            <Button variant="outline" onClick={stopWatch}><StopCircle className="size-4 mr-2" />Stop live tracking</Button>
+          ) : (
+            <Button variant="outline" onClick={startWatch}><Navigation className="size-4 mr-2" />Live tracking</Button>
+          ))}
+        </div>
       </div>
 
       {geoErr && (
         <div className="mb-4 text-sm p-3 rounded-lg bg-warning/15 text-warning-foreground">
-          Couldn't read your location: {geoErr}. The map still shows all hospitals — you can pan and zoom freely.
+          {geoErr} The map still shows all hospitals — you can pan and zoom freely.
+        </div>
+      )}
+
+      {coords && (
+        <div className="mb-4 flex flex-wrap items-center gap-3 text-sm p-3 rounded-lg bg-muted">
+          <span className="font-mono">
+            Latitude: {coords.lat.toFixed(6)} · Longitude: {coords.lng.toFixed(6)}
+          </span>
+          <span className="text-xs text-muted-foreground">±{Math.round(coords.accuracy)} m{watching ? " · live" : ""}</span>
+          <a className="text-primary underline" href={mapsLink(coords.lat, coords.lng)} target="_blank" rel="noreferrer">
+            Open my location in Google Maps
+          </a>
         </div>
       )}
 
@@ -94,6 +93,7 @@ function NearbyPage() {
         ) : (
           <HospitalsMap user={user} pins={pins} />
         )}
+
 
         <div className="rounded-2xl border border-border bg-card overflow-hidden">
           <div className="px-4 py-3 border-b border-border">
@@ -122,7 +122,7 @@ function NearbyPage() {
                 <div className="mt-2 flex gap-2">
                   <a
                     className="text-xs text-primary underline"
-                    href={`https://www.google.com/maps/dir/?api=1&destination=${h.lat},${h.lng}`}
+                    href={directionsLink(Number(h.lat), Number(h.lng), coords)}
                     target="_blank"
                     rel="noreferrer"
                   >
