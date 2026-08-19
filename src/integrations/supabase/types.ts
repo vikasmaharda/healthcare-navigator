@@ -690,6 +690,16 @@ export type Database = {
         }
         Returns: boolean
       }
+      search_blood_donors: {
+        Args: { _blood_group: string; _city?: string }
+        Returns: {
+          blood_group: string
+          city: string
+          id: string
+          name: string
+          phone: string
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
