@@ -99,9 +99,13 @@ function Page() {
 
           <h2 className="font-display text-xl font-bold mt-8 mb-3">Available donors</h2>
           {!user ? (
-            <p className="text-sm text-muted-foreground">Please log in to view donor contact details. This protects donors' personal information.</p>
+            <p className="text-sm text-muted-foreground">Please log in to search donor contact details. This protects donors' personal information.</p>
+          ) : !group ? (
+            <p className="text-sm text-muted-foreground">Select a blood group above to search for matching donors. Donor lists are not browsable in bulk.</p>
           ) : donors.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No donors yet for this filter.</p>
+            <p className="text-sm text-muted-foreground">No donors found for this search.</p>
+
+
 
           ) : (
             <ul className="grid sm:grid-cols-2 gap-3">
