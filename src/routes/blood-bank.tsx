@@ -26,7 +26,7 @@ function Page() {
     queryFn: async () => {
       const { data, error } = await supabase.rpc("search_blood_donors", {
         _blood_group: group,
-        _city: city || null,
+        _city: city || undefined,
       });
       if (error) throw error;
       return data ?? [];
