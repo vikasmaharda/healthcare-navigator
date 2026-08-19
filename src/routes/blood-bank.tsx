@@ -22,14 +22,17 @@ function Page() {
   });
   const { data: donors = [] } = useQuery({
     queryKey: ["donors", group, city, user?.id ?? null],
-    enabled: !!user,
+    enabled: !!user && !!group,
     queryFn: async () => {
-      let q = supabase.from("blood_donors").select("*").eq("available", true);
-      if (group) q = q.eq("blood_group", group);
-      if (city) q = q.ilike("city", `%${city}%`);
-      const { data } = await q; return data ?? [];
+      const { data, error } = await supabase.rpc("search_blood_donors", {
+        _blood_group: group,
+        _city: city || null,
+      });
+      if (error) throw error;
+      return data ?? [];
     },
   });
+
 
 
   const [donorName, setDonorName] = useState("");
