@@ -14,6 +14,65 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_conversations: {
+        Row: {
+          created_at: string
+          id: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ai_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "ai_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       appointments: {
         Row: {
           appointment_date: string
@@ -208,6 +267,7 @@ export type Database = {
           id: string
           name: string
           phone: string | null
+          updated_at: string
         }
         Insert: {
           created_at?: string
@@ -217,6 +277,7 @@ export type Database = {
           id?: string
           name: string
           phone?: string | null
+          updated_at?: string
         }
         Update: {
           created_at?: string
@@ -226,6 +287,7 @@ export type Database = {
           id?: string
           name?: string
           phone?: string | null
+          updated_at?: string
         }
         Relationships: [
           {
@@ -246,10 +308,13 @@ export type Database = {
           experience_years: number | null
           hospital_id: string | null
           id: string
+          is_active: boolean
+          is_available: boolean
           name: string
           rating: number | null
           specialization: string
           timing: string | null
+          updated_at: string
         }
         Insert: {
           available_days?: string[] | null
@@ -259,10 +324,13 @@ export type Database = {
           experience_years?: number | null
           hospital_id?: string | null
           id?: string
+          is_active?: boolean
+          is_available?: boolean
           name: string
           rating?: number | null
           specialization: string
           timing?: string | null
+          updated_at?: string
         }
         Update: {
           available_days?: string[] | null
@@ -272,10 +340,13 @@ export type Database = {
           experience_years?: number | null
           hospital_id?: string | null
           id?: string
+          is_active?: boolean
+          is_available?: boolean
           name?: string
           rating?: number | null
           specialization?: string
           timing?: string | null
+          updated_at?: string
         }
         Relationships: [
           {
@@ -286,6 +357,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      emergency_alerts: {
+        Row: {
+          channels: string[]
+          created_at: string
+          id: string
+          location_url: string | null
+          message: string
+          recipients_count: number
+          status: string
+          user_id: string
+        }
+        Insert: {
+          channels?: string[]
+          created_at?: string
+          id?: string
+          location_url?: string | null
+          message: string
+          recipients_count?: number
+          status?: string
+          user_id: string
+        }
+        Update: {
+          channels?: string[]
+          created_at?: string
+          id?: string
+          location_url?: string | null
+          message?: string
+          recipients_count?: number
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       emergency_contacts: {
         Row: {
@@ -317,6 +421,8 @@ export type Database = {
           id: string
           name: string
           notes: string | null
+          status: string
+          updated_at: string
         }
         Insert: {
           available?: boolean | null
@@ -326,6 +432,8 @@ export type Database = {
           id?: string
           name: string
           notes?: string | null
+          status?: string
+          updated_at?: string
         }
         Update: {
           available?: boolean | null
@@ -335,6 +443,8 @@ export type Database = {
           id?: string
           name?: string
           notes?: string | null
+          status?: string
+          updated_at?: string
         }
         Relationships: [
           {
@@ -376,6 +486,82 @@ export type Database = {
         }
         Relationships: []
       }
+      hospital_admins: {
+        Row: {
+          approved: boolean
+          created_at: string
+          email: string
+          hospital_id: string
+          id: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          approved?: boolean
+          created_at?: string
+          email: string
+          hospital_id: string
+          id?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          approved?: boolean
+          created_at?: string
+          email?: string
+          hospital_id?: string
+          id?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hospital_admins_hospital_id_fkey"
+            columns: ["hospital_id"]
+            isOneToOne: false
+            referencedRelation: "hospitals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hospital_updates: {
+        Row: {
+          actor_email: string | null
+          changed_by: string | null
+          created_at: string
+          entity: string
+          hospital_id: string
+          id: string
+          summary: string
+        }
+        Insert: {
+          actor_email?: string | null
+          changed_by?: string | null
+          created_at?: string
+          entity: string
+          hospital_id: string
+          id?: string
+          summary: string
+        }
+        Update: {
+          actor_email?: string | null
+          changed_by?: string | null
+          created_at?: string
+          entity?: string
+          hospital_id?: string
+          id?: string
+          summary?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hospital_updates_hospital_id_fkey"
+            columns: ["hospital_id"]
+            isOneToOne: false
+            referencedRelation: "hospitals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       hospitals: {
         Row: {
           address: string | null
@@ -383,19 +569,31 @@ export type Database = {
           city: string
           cost_tier: string | null
           created_at: string | null
+          email: string | null
           emergency_24x7: boolean | null
+          emergency_phone: string | null
           has_ambulance: boolean | null
+          has_blood_bank: boolean | null
           has_icu: boolean | null
+          has_lab: boolean | null
           has_mri: boolean | null
+          has_pharmacy: boolean | null
           id: string
           image_url: string | null
+          is_active: boolean
           is_government: boolean | null
           lat: number | null
           lng: number | null
+          maps_link: string | null
           name: string
           phone: string | null
+          pincode: string | null
           rating: number | null
           specialties: string[] | null
+          state: string | null
+          updated_at: string
+          verified: boolean
+          website: string | null
         }
         Insert: {
           address?: string | null
@@ -403,19 +601,31 @@ export type Database = {
           city: string
           cost_tier?: string | null
           created_at?: string | null
+          email?: string | null
           emergency_24x7?: boolean | null
+          emergency_phone?: string | null
           has_ambulance?: boolean | null
+          has_blood_bank?: boolean | null
           has_icu?: boolean | null
+          has_lab?: boolean | null
           has_mri?: boolean | null
+          has_pharmacy?: boolean | null
           id?: string
           image_url?: string | null
+          is_active?: boolean
           is_government?: boolean | null
           lat?: number | null
           lng?: number | null
+          maps_link?: string | null
           name: string
           phone?: string | null
+          pincode?: string | null
           rating?: number | null
           specialties?: string[] | null
+          state?: string | null
+          updated_at?: string
+          verified?: boolean
+          website?: string | null
         }
         Update: {
           address?: string | null
@@ -423,19 +633,31 @@ export type Database = {
           city?: string
           cost_tier?: string | null
           created_at?: string | null
+          email?: string | null
           emergency_24x7?: boolean | null
+          emergency_phone?: string | null
           has_ambulance?: boolean | null
+          has_blood_bank?: boolean | null
           has_icu?: boolean | null
+          has_lab?: boolean | null
           has_mri?: boolean | null
+          has_pharmacy?: boolean | null
           id?: string
           image_url?: string | null
+          is_active?: boolean
           is_government?: boolean | null
           lat?: number | null
           lng?: number | null
+          maps_link?: string | null
           name?: string
           phone?: string | null
+          pincode?: string | null
           rating?: number | null
           specialties?: string[] | null
+          state?: string | null
+          updated_at?: string
+          verified?: boolean
+          website?: string | null
         }
         Relationships: []
       }
@@ -444,6 +666,7 @@ export type Database = {
           address: string | null
           ayushman: boolean | null
           city: string
+          claim_hospital_id: string | null
           created_at: string | null
           emergency_24x7: boolean | null
           has_ambulance: boolean | null
@@ -453,6 +676,7 @@ export type Database = {
           is_government: boolean | null
           lat: number | null
           lng: number | null
+          manager_email: string | null
           name: string
           notes: string | null
           phone: string | null
@@ -466,6 +690,7 @@ export type Database = {
           address?: string | null
           ayushman?: boolean | null
           city: string
+          claim_hospital_id?: string | null
           created_at?: string | null
           emergency_24x7?: boolean | null
           has_ambulance?: boolean | null
@@ -475,6 +700,7 @@ export type Database = {
           is_government?: boolean | null
           lat?: number | null
           lng?: number | null
+          manager_email?: string | null
           name: string
           notes?: string | null
           phone?: string | null
@@ -488,6 +714,7 @@ export type Database = {
           address?: string | null
           ayushman?: boolean | null
           city?: string
+          claim_hospital_id?: string | null
           created_at?: string | null
           emergency_24x7?: boolean | null
           has_ambulance?: boolean | null
@@ -497,6 +724,7 @@ export type Database = {
           is_government?: boolean | null
           lat?: number | null
           lng?: number | null
+          manager_email?: string | null
           name?: string
           notes?: string | null
           phone?: string | null
@@ -506,7 +734,15 @@ export type Database = {
           submitted_by?: string | null
           submitter_email?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "pending_hospitals_claim_hospital_id_fkey"
+            columns: ["claim_hospital_id"]
+            isOneToOne: false
+            referencedRelation: "hospitals"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       pharmacies: {
         Row: {
@@ -657,6 +893,80 @@ export type Database = {
         }
         Relationships: []
       }
+      user_activity: {
+        Row: {
+          activity_type: string
+          created_at: string
+          detail: string | null
+          hospital_id: string | null
+          id: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          activity_type: string
+          created_at?: string
+          detail?: string | null
+          hospital_id?: string | null
+          id?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          activity_type?: string
+          created_at?: string
+          detail?: string | null
+          hospital_id?: string | null
+          id?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_activity_hospital_id_fkey"
+            columns: ["hospital_id"]
+            isOneToOne: false
+            referencedRelation: "hospitals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_emergency_contacts: {
+        Row: {
+          created_at: string
+          custom_message: string | null
+          email: string | null
+          id: string
+          name: string
+          phone: string | null
+          relationship: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          custom_message?: string | null
+          email?: string | null
+          id?: string
+          name: string
+          phone?: string | null
+          relationship?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          custom_message?: string | null
+          email?: string | null
+          id?: string
+          name?: string
+          phone?: string | null
+          relationship?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -678,11 +988,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_settings: {
+        Row: {
+          created_at: string
+          emergency_message: string
+          language: string
+          share_location: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          emergency_message?: string
+          language?: string
+          share_location?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          emergency_message?: string
+          language?: string
+          share_location?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      calculate_age: { Args: { _dob: string }; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -690,6 +1028,11 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_hospital_admin: {
+        Args: { _hospital_id: string; _user_id: string }
+        Returns: boolean
+      }
+      my_hospital_id: { Args: never; Returns: string }
       search_blood_donors: {
         Args: { _blood_group: string; _city?: string }
         Returns: {
