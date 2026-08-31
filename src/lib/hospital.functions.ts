@@ -82,7 +82,7 @@ export const updateMyHospital = createServerFn({ method: "POST" })
     const hospitalId = await myHospitalId(supabase, userId);
     const patch = Object.fromEntries(
       Object.entries(data).map(([k, v]) => [k, v === "" ? null : v]),
-    );
+    ) as never;
     const { error } = await supabase.from("hospitals").update(patch).eq("id", hospitalId);
     if (error) throw new Error(error.message);
     await logUpdate(supabase, hospitalId, "hospital", "Hospital profile updated");
