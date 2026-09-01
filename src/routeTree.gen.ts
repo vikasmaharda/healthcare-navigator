@@ -18,6 +18,7 @@ import { Route as CompareRouteImport } from './routes/compare'
 import { Route as DoctorsRouteImport } from './routes/doctors'
 import { Route as EmergencyRouteImport } from './routes/emergency'
 import { Route as HelpRouteImport } from './routes/help'
+import { Route as HospitalDashboardRouteImport } from './routes/hospital-dashboard'
 import { Route as HospitalsRouteImport } from './routes/hospitals'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as NearbyRouteImport } from './routes/nearby'
@@ -71,6 +72,11 @@ const HelpRoute = HelpRouteImport.update({
   path: '/help',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HospitalDashboardRoute = HospitalDashboardRouteImport.update({
+  id: '/hospital-dashboard',
+  path: '/hospital-dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HospitalsRoute = HospitalsRouteImport.update({
   id: '/hospitals',
   path: '/hospitals',
@@ -117,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/doctors': typeof DoctorsRoute
   '/emergency': typeof EmergencyRoute
   '/help': typeof HelpRoute
+  '/hospital-dashboard': typeof HospitalDashboardRoute
   '/hospitals': typeof HospitalsRoute
   '/login': typeof LoginRoute
   '/nearby': typeof NearbyRoute
@@ -135,6 +142,7 @@ export interface FileRoutesByTo {
   '/doctors': typeof DoctorsRoute
   '/emergency': typeof EmergencyRoute
   '/help': typeof HelpRoute
+  '/hospital-dashboard': typeof HospitalDashboardRoute
   '/hospitals': typeof HospitalsRoute
   '/login': typeof LoginRoute
   '/nearby': typeof NearbyRoute
@@ -154,6 +162,7 @@ export interface FileRoutesById {
   '/doctors': typeof DoctorsRoute
   '/emergency': typeof EmergencyRoute
   '/help': typeof HelpRoute
+  '/hospital-dashboard': typeof HospitalDashboardRoute
   '/hospitals': typeof HospitalsRoute
   '/login': typeof LoginRoute
   '/nearby': typeof NearbyRoute
@@ -174,6 +183,7 @@ export interface FileRouteTypes {
     | '/doctors'
     | '/emergency'
     | '/help'
+    | '/hospital-dashboard'
     | '/hospitals'
     | '/login'
     | '/nearby'
@@ -192,6 +202,7 @@ export interface FileRouteTypes {
     | '/doctors'
     | '/emergency'
     | '/help'
+    | '/hospital-dashboard'
     | '/hospitals'
     | '/login'
     | '/nearby'
@@ -210,6 +221,7 @@ export interface FileRouteTypes {
     | '/doctors'
     | '/emergency'
     | '/help'
+    | '/hospital-dashboard'
     | '/hospitals'
     | '/login'
     | '/nearby'
@@ -229,6 +241,7 @@ export interface RootRouteChildren {
   DoctorsRoute: typeof DoctorsRoute
   EmergencyRoute: typeof EmergencyRoute
   HelpRoute: typeof HelpRoute
+  HospitalDashboardRoute: typeof HospitalDashboardRoute
   HospitalsRoute: typeof HospitalsRoute
   LoginRoute: typeof LoginRoute
   NearbyRoute: typeof NearbyRoute
@@ -303,6 +316,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HelpRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/hospital-dashboard': {
+      id: '/hospital-dashboard'
+      path: '/hospital-dashboard'
+      fullPath: '/hospital-dashboard'
+      preLoaderRoute: typeof HospitalDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/hospitals': {
       id: '/hospitals'
       path: '/hospitals'
@@ -365,6 +385,7 @@ const rootRouteChildren: RootRouteChildren = {
   DoctorsRoute: DoctorsRoute,
   EmergencyRoute: EmergencyRoute,
   HelpRoute: HelpRoute,
+  HospitalDashboardRoute: HospitalDashboardRoute,
   HospitalsRoute: HospitalsRoute,
   LoginRoute: LoginRoute,
   NearbyRoute: NearbyRoute,
