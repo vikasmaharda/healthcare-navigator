@@ -236,9 +236,16 @@ function Page() {
           </Button>
         </form>
 
-        <button onClick={() => setMode(m => m === "login" ? "signup" : "login")} className="w-full text-sm text-muted-foreground mt-4 hover:text-foreground">
-          {mode === "login" ? "New here? Create an account" : "Already have an account? Log in"}
-        </button>
+        {accountType === "patient" ? (
+          <button onClick={() => setMode(m => m === "login" ? "signup" : "login")} className="w-full text-sm text-muted-foreground mt-4 hover:text-foreground">
+            {mode === "login" ? "New here? Create an account" : "Already have an account? Log in"}
+          </button>
+        ) : (
+          <p className="text-xs text-muted-foreground mt-4 text-center">
+            Hospital accounts are created after verification. Register your hospital from the “Add a hospital” form and the MediRoute team will link your email.
+          </p>
+        )}
+
       </div>
     </div>
   );
