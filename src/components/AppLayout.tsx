@@ -179,11 +179,17 @@ export function AppLayout() {
                 <Link to="/submit-hospital" className="col-span-2 mt-1 flex items-center gap-2 px-3 py-2 rounded-md bg-muted hover:bg-card text-sm">
                   <Plus className="size-4 text-primary" /> Add a hospital
                 </Link>
-                {isAdmin(user?.email) && (
+                {role.data?.role === "hospital_admin" && (
+                  <Link to="/hospital-dashboard" className="col-span-2 flex items-center gap-2 px-3 py-2 rounded-md bg-primary/15 text-primary text-sm font-semibold">
+                    <Building2 className="size-4" /> Hospital dashboard
+                  </Link>
+                )}
+                {(role.data?.role === "super_admin" || isAdmin(user?.email)) && (
                   <Link to="/admin" className="col-span-2 flex items-center gap-2 px-3 py-2 rounded-md bg-primary/15 text-primary text-sm font-semibold">
                     <Shield className="size-4" /> Admin
                   </Link>
                 )}
+
                 <Link to="/emergency" className="col-span-2 mt-1 flex items-center gap-2 px-3 py-2 rounded-md gradient-emergency text-emergency-foreground font-semibold">
                   <Siren className="size-4" /> Emergency SOS
                 </Link>
