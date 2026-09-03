@@ -2,12 +2,16 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { fallback, zodValidator } from "@tanstack/zod-adapter";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/use-auth";
+import { getMyRole } from "@/lib/roles.functions";
 import { Button } from "@/components/ui/button";
-import { Mail, KeyRound, User, CalendarDays, Loader2 } from "lucide-react";
+import { Mail, KeyRound, User, CalendarDays, Loader2, Building2, HeartPulse } from "lucide-react";
 import { toast } from "sonner";
+
 
 const schema = z.object({ redirect: fallback(z.string(), "/").default("/") });
 export const Route = createFileRoute("/login")({
