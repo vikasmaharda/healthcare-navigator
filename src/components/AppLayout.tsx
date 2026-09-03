@@ -1,6 +1,10 @@
 import { Link, useLocation, Outlet } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Activity, Stethoscope, CalendarCheck, Siren, Bot, Droplet, Pill, Landmark, FileHeart, LogIn, LogOut, Menu, X, Moon, Sun, Languages, MapPin, Plus, LifeBuoy, Shield, ChevronDown } from "lucide-react";
+import { Activity, Stethoscope, CalendarCheck, Siren, Bot, Landmark, FileHeart, LogIn, LogOut, Menu, X, Moon, Sun, Languages, MapPin, Plus, LifeBuoy, Shield, Building2, ChevronDown } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { getMyRole } from "@/lib/roles.functions";
+
 import { useAuth } from "@/hooks/use-auth";
 import { I18nContext, dict, type Lang } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
