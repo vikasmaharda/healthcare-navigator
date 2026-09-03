@@ -132,11 +132,17 @@ export function AppLayout() {
                     <DropdownMenuItem asChild>
                       <Link to="/appointments" className="flex items-center gap-2 cursor-pointer"><CalendarCheck className="size-4" /> {t("appointments")}</Link>
                     </DropdownMenuItem>
-                    {isAdmin(user?.email) && (
+                    {role.data?.role === "hospital_admin" && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/hospital-dashboard" className="flex items-center gap-2 cursor-pointer text-primary"><Building2 className="size-4" /> Hospital dashboard</Link>
+                      </DropdownMenuItem>
+                    )}
+                    {(role.data?.role === "super_admin" || isAdmin(user?.email)) && (
                       <DropdownMenuItem asChild>
                         <Link to="/admin" className="flex items-center gap-2 cursor-pointer text-primary"><Shield className="size-4" /> Admin</Link>
                       </DropdownMenuItem>
                     )}
+
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={signOut} className="flex items-center gap-2 cursor-pointer">
                       <LogOut className="size-4" /> {t("logout")}
