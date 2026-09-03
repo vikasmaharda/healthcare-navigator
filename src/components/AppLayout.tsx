@@ -17,18 +17,15 @@ const NAV = [
   { to: "/", labelKey: "home", icon: Activity },
   { to: "/hospitals", labelKey: "hospitals", icon: Stethoscope },
   { to: "/nearby", labelKey: "nearby", icon: MapPin },
-  { to: "/doctors", labelKey: "doctors", icon: Stethoscope },
-  { to: "/appointments", labelKey: "appointments", icon: CalendarCheck },
   { to: "/ai-assistant", labelKey: "ai", icon: Bot },
-  { to: "/blood-bank", labelKey: "blood", icon: Droplet },
-  { to: "/pharmacy", labelKey: "pharmacy", icon: Pill },
   { to: "/schemes", labelKey: "schemes", icon: Landmark },
   { to: "/records", labelKey: "records", icon: FileHeart },
   { to: "/help", labelKey: "help", icon: LifeBuoy },
 ] as const;
 
-const PRIMARY_NAV = NAV.slice(0, 6);
-const SECONDARY_NAV = NAV.slice(6);
+const PRIMARY_NAV = NAV.slice(0, 5);
+const SECONDARY_NAV = NAV.slice(5);
+
 
 
 export function AppLayout() {
