@@ -150,8 +150,25 @@ function Page() {
   return (
     <div className="min-h-[70vh] grid place-items-center px-4 py-10">
       <div className="w-full max-w-md p-6 rounded-2xl bg-card border border-border shadow-soft">
-        <h1 className="font-display text-2xl font-bold">{mode === "login" ? "Welcome back" : "Create your account"}</h1>
-        <p className="text-sm text-muted-foreground mt-1">Manage appointments, reviews and health records.</p>
+        <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-muted mb-5">
+          <button type="button" onClick={() => { setAccountType("patient"); }}
+            className={`flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-colors ${accountType === "patient" ? "bg-card shadow-soft text-foreground" : "text-muted-foreground"}`}>
+            <HeartPulse className="size-4" /> Patient
+          </button>
+          <button type="button" onClick={() => { setAccountType("hospital"); setMode("login"); }}
+            className={`flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-colors ${accountType === "hospital" ? "bg-card shadow-soft text-foreground" : "text-muted-foreground"}`}>
+            <Building2 className="size-4" /> Hospital
+          </button>
+        </div>
+        <h1 className="font-display text-2xl font-bold">
+          {accountType === "hospital" ? "Hospital sign-in" : mode === "login" ? "Welcome back" : "Create your account"}
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          {accountType === "hospital"
+            ? "Sign in with your hospital's authorised email to manage your own hospital's details."
+            : "Manage appointments, records and emergency contacts."}
+        </p>
+
 
         <Button variant="outline" className="w-full mt-5" onClick={signInGoogle} disabled={google}>
           {google ? <Loader2 className="size-4 mr-2 animate-spin" /> : (
