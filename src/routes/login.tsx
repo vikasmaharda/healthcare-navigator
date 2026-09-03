@@ -37,6 +37,9 @@ function Page() {
   const { redirect } = Route.useSearch();
   const { user } = useAuth();
   const nav = useNavigate();
+  const fetchRole = useServerFn(getMyRole);
+  const role = useQuery({ queryKey: ["me", "role"], queryFn: () => fetchRole(), enabled: !!user, retry: false });
+  const [accountType, setAccountType] = useState<"patient" | "hospital">("patient");
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -47,8 +50,16 @@ function Page() {
   const [google, setGoogle] = useState(false);
 
   useEffect(() => {
-    if (user) nav({ to: redirect as any, replace: true });
-  }, [user, redirect, nav]);
+    if (!user) return;
+    if (redirect && redirect !== "/") { nav({ to: redirect as any, replace: true }); return; }
+    if (role.isLoading) return;
+    const r = role.data?.role;
+    // Patients always land on Home; staff accounts go to their workspace.
+    if (r === "hospital_admin") nav({ to: "/hospital-dashboard", replace: true });
+    else if (r === "super_admin") nav({ to: "/admin", replace: true });
+    else nav({ to: "/", replace: true });
+  }, [user, redirect, nav, role.isLoading, role.data]);
+
 
   const signInGoogle = async () => {
     setGoogle(true);
