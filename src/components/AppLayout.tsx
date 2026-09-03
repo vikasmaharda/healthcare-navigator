@@ -34,6 +34,9 @@ const SECONDARY_NAV = NAV.slice(5);
 
 export function AppLayout() {
   const { user, signOut } = useAuth();
+  const fetchRole = useServerFn(getMyRole);
+  const role = useQuery({ queryKey: ["me", "role"], queryFn: () => fetchRole(), enabled: !!user, retry: false, staleTime: 60_000 });
+
   const loc = useLocation();
   const [open, setOpen] = useState(false);
   const [dark, setDark] = useState(false);
