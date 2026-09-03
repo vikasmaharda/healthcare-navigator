@@ -74,7 +74,7 @@ function HospitalDashboardPage() {
       body={`You're signed in as ${user.email}. This account isn't approved as an administrator of any hospital yet. Submit your hospital for verification, and the MediRoute team will link your account.`}
       cta={<Link to="/submit-hospital"><Button>Register your hospital</Button></Link>} />;
 
-  const d = q.data;
+  const d = q.data as typeof q.data & { hospital: any };
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10">

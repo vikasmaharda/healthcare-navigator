@@ -1,6 +1,10 @@
 import { Link, useLocation, Outlet } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Activity, Stethoscope, CalendarCheck, Siren, Bot, Droplet, Pill, Landmark, FileHeart, LogIn, LogOut, Menu, X, Moon, Sun, Languages, MapPin, Plus, LifeBuoy, Shield, ChevronDown } from "lucide-react";
+import { Activity, Stethoscope, CalendarCheck, Siren, Bot, Landmark, FileHeart, LogIn, LogOut, Menu, X, Moon, Sun, Languages, MapPin, Plus, LifeBuoy, Shield, Building2, ChevronDown } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { getMyRole } from "@/lib/roles.functions";
+
 import { useAuth } from "@/hooks/use-auth";
 import { I18nContext, dict, type Lang } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
@@ -17,22 +21,22 @@ const NAV = [
   { to: "/", labelKey: "home", icon: Activity },
   { to: "/hospitals", labelKey: "hospitals", icon: Stethoscope },
   { to: "/nearby", labelKey: "nearby", icon: MapPin },
-  { to: "/doctors", labelKey: "doctors", icon: Stethoscope },
-  { to: "/appointments", labelKey: "appointments", icon: CalendarCheck },
   { to: "/ai-assistant", labelKey: "ai", icon: Bot },
-  { to: "/blood-bank", labelKey: "blood", icon: Droplet },
-  { to: "/pharmacy", labelKey: "pharmacy", icon: Pill },
   { to: "/schemes", labelKey: "schemes", icon: Landmark },
   { to: "/records", labelKey: "records", icon: FileHeart },
   { to: "/help", labelKey: "help", icon: LifeBuoy },
 ] as const;
 
-const PRIMARY_NAV = NAV.slice(0, 6);
-const SECONDARY_NAV = NAV.slice(6);
+const PRIMARY_NAV = NAV.slice(0, 5);
+const SECONDARY_NAV = NAV.slice(5);
+
 
 
 export function AppLayout() {
   const { user, signOut } = useAuth();
+  const fetchRole = useServerFn(getMyRole);
+  const role = useQuery({ queryKey: ["me", "role"], queryFn: () => fetchRole(), enabled: !!user, retry: false, staleTime: 60_000 });
+
   const loc = useLocation();
   const [open, setOpen] = useState(false);
   const [dark, setDark] = useState(false);
@@ -131,11 +135,17 @@ export function AppLayout() {
                     <DropdownMenuItem asChild>
                       <Link to="/appointments" className="flex items-center gap-2 cursor-pointer"><CalendarCheck className="size-4" /> {t("appointments")}</Link>
                     </DropdownMenuItem>
-                    {isAdmin(user?.email) && (
+                    {role.data?.role === "hospital_admin" && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/hospital-dashboard" className="flex items-center gap-2 cursor-pointer text-primary"><Building2 className="size-4" /> Hospital dashboard</Link>
+                      </DropdownMenuItem>
+                    )}
+                    {(role.data?.role === "super_admin" || isAdmin(user?.email)) && (
                       <DropdownMenuItem asChild>
                         <Link to="/admin" className="flex items-center gap-2 cursor-pointer text-primary"><Shield className="size-4" /> Admin</Link>
                       </DropdownMenuItem>
                     )}
+
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={signOut} className="flex items-center gap-2 cursor-pointer">
                       <LogOut className="size-4" /> {t("logout")}
@@ -169,11 +179,17 @@ export function AppLayout() {
                 <Link to="/submit-hospital" className="col-span-2 mt-1 flex items-center gap-2 px-3 py-2 rounded-md bg-muted hover:bg-card text-sm">
                   <Plus className="size-4 text-primary" /> Add a hospital
                 </Link>
-                {isAdmin(user?.email) && (
+                {role.data?.role === "hospital_admin" && (
+                  <Link to="/hospital-dashboard" className="col-span-2 flex items-center gap-2 px-3 py-2 rounded-md bg-primary/15 text-primary text-sm font-semibold">
+                    <Building2 className="size-4" /> Hospital dashboard
+                  </Link>
+                )}
+                {(role.data?.role === "super_admin" || isAdmin(user?.email)) && (
                   <Link to="/admin" className="col-span-2 flex items-center gap-2 px-3 py-2 rounded-md bg-primary/15 text-primary text-sm font-semibold">
                     <Shield className="size-4" /> Admin
                   </Link>
                 )}
+
                 <Link to="/emergency" className="col-span-2 mt-1 flex items-center gap-2 px-3 py-2 rounded-md gradient-emergency text-emergency-foreground font-semibold">
                   <Siren className="size-4" /> Emergency SOS
                 </Link>

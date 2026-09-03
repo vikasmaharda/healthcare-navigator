@@ -2,12 +2,16 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { fallback, zodValidator } from "@tanstack/zod-adapter";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/use-auth";
+import { getMyRole } from "@/lib/roles.functions";
 import { Button } from "@/components/ui/button";
-import { Mail, KeyRound, User, CalendarDays, Loader2 } from "lucide-react";
+import { Mail, KeyRound, User, CalendarDays, Loader2, Building2, HeartPulse } from "lucide-react";
 import { toast } from "sonner";
+
 
 const schema = z.object({ redirect: fallback(z.string(), "/").default("/") });
 export const Route = createFileRoute("/login")({
@@ -37,6 +41,9 @@ function Page() {
   const { redirect } = Route.useSearch();
   const { user } = useAuth();
   const nav = useNavigate();
+  const fetchRole = useServerFn(getMyRole);
+  const role = useQuery({ queryKey: ["me", "role"], queryFn: () => fetchRole(), enabled: !!user, retry: false });
+  const [accountType, setAccountType] = useState<"patient" | "hospital">("patient");
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -47,8 +54,16 @@ function Page() {
   const [google, setGoogle] = useState(false);
 
   useEffect(() => {
-    if (user) nav({ to: redirect as any, replace: true });
-  }, [user, redirect, nav]);
+    if (!user) return;
+    if (redirect && redirect !== "/") { nav({ to: redirect as any, replace: true }); return; }
+    if (role.isLoading) return;
+    const r = role.data?.role;
+    // Patients always land on Home; staff accounts go to their workspace.
+    if (r === "hospital_admin") nav({ to: "/hospital-dashboard", replace: true });
+    else if (r === "super_admin") nav({ to: "/admin", replace: true });
+    else nav({ to: "/", replace: true });
+  }, [user, redirect, nav, role.isLoading, role.data]);
+
 
   const signInGoogle = async () => {
     setGoogle(true);
@@ -135,8 +150,25 @@ function Page() {
   return (
     <div className="min-h-[70vh] grid place-items-center px-4 py-10">
       <div className="w-full max-w-md p-6 rounded-2xl bg-card border border-border shadow-soft">
-        <h1 className="font-display text-2xl font-bold">{mode === "login" ? "Welcome back" : "Create your account"}</h1>
-        <p className="text-sm text-muted-foreground mt-1">Manage appointments, reviews and health records.</p>
+        <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-muted mb-5">
+          <button type="button" onClick={() => { setAccountType("patient"); }}
+            className={`flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-colors ${accountType === "patient" ? "bg-card shadow-soft text-foreground" : "text-muted-foreground"}`}>
+            <HeartPulse className="size-4" /> Patient
+          </button>
+          <button type="button" onClick={() => { setAccountType("hospital"); setMode("login"); }}
+            className={`flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-colors ${accountType === "hospital" ? "bg-card shadow-soft text-foreground" : "text-muted-foreground"}`}>
+            <Building2 className="size-4" /> Hospital
+          </button>
+        </div>
+        <h1 className="font-display text-2xl font-bold">
+          {accountType === "hospital" ? "Hospital sign-in" : mode === "login" ? "Welcome back" : "Create your account"}
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          {accountType === "hospital"
+            ? "Sign in with your hospital's authorised email to manage your own hospital's details."
+            : "Manage appointments, records and emergency contacts."}
+        </p>
+
 
         <Button variant="outline" className="w-full mt-5" onClick={signInGoogle} disabled={google}>
           {google ? <Loader2 className="size-4 mr-2 animate-spin" /> : (
@@ -204,9 +236,16 @@ function Page() {
           </Button>
         </form>
 
-        <button onClick={() => setMode(m => m === "login" ? "signup" : "login")} className="w-full text-sm text-muted-foreground mt-4 hover:text-foreground">
-          {mode === "login" ? "New here? Create an account" : "Already have an account? Log in"}
-        </button>
+        {accountType === "patient" ? (
+          <button onClick={() => setMode(m => m === "login" ? "signup" : "login")} className="w-full text-sm text-muted-foreground mt-4 hover:text-foreground">
+            {mode === "login" ? "New here? Create an account" : "Already have an account? Log in"}
+          </button>
+        ) : (
+          <p className="text-xs text-muted-foreground mt-4 text-center">
+            Hospital accounts are created after verification. Register your hospital from the “Add a hospital” form and the MediRoute team will link your email.
+          </p>
+        )}
+
       </div>
     </div>
   );
